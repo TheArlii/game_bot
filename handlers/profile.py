@@ -1,26 +1,24 @@
-import json, os
+import json
+import os
 from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from keyboards.profile import profile_menu
 
-# Router obyektini yaratamiz (profil uchun)
 router = Router()
 
-# 📁 Foydalanuvchi asosiy bazasi
 DB_PATH = "users.json"
 
-# ✅ Lavozimni olish funksiyasi (data/lavozimlar.json dan)
+# ✅ Lavozimni olish
 def lavozimni_olish(user_id: str) -> str:
     try:
         with open("data/lavozimlar.json", "r", encoding="utf-8") as f:
             data = json.load(f)
-            # Agar lavozim topilmasa default yozuv chiqariladi
             return data.get(user_id, "– lavozim belgilanmagan –")
     except:
         return "– lavozim belgilanmagan –"
 
-# ✅ Reytingni olish funksiyasi (data/reyting.json dan)
+# ✅ Reytingni olish
 def reytingni_olish(user_id: str) -> str:
     try:
         with open("data/reyting.json", "r", encoding="utf-8") as f:
@@ -36,13 +34,12 @@ def reytingni_olish(user_id: str) -> str:
             if total == 0:
                 return "– hali reyting yo‘q –"
 
-            # G‘alabalar nisbati asosida 10 ballik tizimda baholanadi
             rating = round((win / total) * 10, 1)
             return f"{rating}/10"
     except:
         return "– hali reyting yo‘q –"
 
-# ✅ Referal sonini olish funksiyasi (data/referallar.json dan)
+# ✅ Referallar sonini olish
 def referallar_soni(user_id: str) -> int:
     try:
         with open("data/referallar.json", "r", encoding="utf-8") as f:
@@ -51,35 +48,34 @@ def referallar_soni(user_id: str) -> int:
     except:
         return 0
 
-# 🧾 Profil ko‘rish uchun asosiy handler
+# 🧾 Profil ko‘rish handler
 @router.message(lambda m: m.text == "👤 Profil")
 async def profile_handler(message: Message, bot: Bot, state: FSMContext):
     user_id = str(message.from_user.id)
 
-    # 🔄 So‘nggi xabarlarni o‘chirish (tozalik uchun)
+    # 🧹 Kiruvchi xabarni o‘chirish
     try:
-        await bot.delete_message(message.chat.id, message.message_id)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     except:
         pass
 
+    # 🧹 Oldingi bot xabarini o‘chirish
     data = await state.get_data()
     msg_id = data.get("last_msg_id")
     if msg_id:
         try:
-            await bot.delete_message(message.chat.id, msg_id)
+            await bot.delete_message(chat_id=message.chat.id, message_id=msg_id)
         except:
             pass
 
-    # 📂 Agar userlar bazasi mavjud bo‘lmasa — yaratish
+    # ✅ Foydalanuvchilar bazasi
     if not os.path.exists(DB_PATH):
         with open(DB_PATH, "w", encoding="utf-8") as f:
             json.dump({}, f)
 
-    # 📖 Foydalanuvchilarni o‘qib olish
     with open(DB_PATH, "r", encoding="utf-8") as f:
         users = json.load(f)
 
-    # 🌱 Agar foydalanuvchi bazada bo‘lmasa — yangi yozuv qo‘shamiz
     if user_id not in users:
         users[user_id] = {
             "name": message.from_user.full_name,
@@ -87,16 +83,14 @@ async def profile_handler(message: Message, bot: Bot, state: FSMContext):
             "points": 0
         }
         with open(DB_PATH, "w", encoding="utf-8") as f:
-            json.dump(users, f)
+            json.dump(users, f, ensure_ascii=False, indent=2)
 
     user = users[user_id]
-
-    # 🧙‍♂️ Qo‘shimcha ma'lumotlarni olish
     lavozim = lavozimni_olish(user_id)
     reyting = reytingni_olish(user_id)
     referallar = referallar_soni(user_id)
 
-    # 🎨 Foydalanuvchi profili dizayni
+    # 📬 Profil ma’lumotini yuborish
     text = (
         f"<b>👤 Profilingiz</b>\n\n"
         f"💻 Ism: <i>{user['name']}</i>\n"
@@ -107,6 +101,5 @@ async def profile_handler(message: Message, bot: Bot, state: FSMContext):
         f"👥 Taklif qilganlar: <b>{referallar}</b> ta"
     )
 
-    # 📬 Javob yuborish va holatni yangilash
     msg = await message.answer(text, reply_markup=profile_menu)
     await state.update_data(last_msg_id=msg.message_id)
