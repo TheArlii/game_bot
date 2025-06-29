@@ -1,25 +1,23 @@
 # 📁 handlers/start.py
 
+import json
+import os
 from aiogram import Router, Bot
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from keyboards.main_menu import main_menu
-import json
-import os
 
 router = Router()
-
 USERS_DB = "users.json"
 
-# ✅ /start buyrug‘i uchun handler
 @router.message(lambda m: m.text == "/start")
 async def start_handler(message: Message, bot: Bot, state: FSMContext):
-    user_id = str(message.from_user.id)  # ID ni string ko‘rinishida saqlaymiz
+    user_id = str(message.from_user.id)
     full_name = message.from_user.full_name
 
-    # 🧹 Foydalanuvchining yuborgan /start xabarini o‘chirish
+    # 🧹 Yuborilgan /start xabarini o‘chirish
     try:
-        await bot.delete_message(message.chat.id, message.message_id)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     except:
         pass
 
@@ -28,11 +26,11 @@ async def start_handler(message: Message, bot: Bot, state: FSMContext):
     msg_id = data.get("last_msg_id")
     if msg_id:
         try:
-            await bot.delete_message(message.chat.id, msg_id)
+            await bot.delete_message(chat_id=message.chat.id, message_id=msg_id)
         except:
             pass
 
-    # ✅ Foydalanuvchini bazaga qo‘shish
+    # ✅ Foydalanuvchini bazaga qo‘shish yoki tekshirish
     if not os.path.exists(USERS_DB):
         with open(USERS_DB, "w", encoding="utf-8") as f:
             json.dump({}, f)
@@ -51,7 +49,7 @@ async def start_handler(message: Message, bot: Bot, state: FSMContext):
         with open(USERS_DB, "w", encoding="utf-8") as f:
             json.dump(users, f, ensure_ascii=False, indent=2)
 
-    # ✅ Asosiy menyu
+    # ✅ Asosiy menyuni yuborish
     msg = await message.answer(
         "🏁 <b>Xush kelibsiz!</b>\n\nAsosiy menyudan birini tanlang:",
         reply_markup=main_menu(int(user_id))
