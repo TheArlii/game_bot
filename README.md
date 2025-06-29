@@ -52,27 +52,6 @@ Render sizdan quyidagi qiymatlarni kiritishni so‘raydi:
 
 | O‘zgaruvchi nomi | Tavsif | Misol |
 |------------------|--------|-------|
-| `BOT_TOKEN`      | BotFather’dan olingan bot token | `123456:ABCdefGhijkLMNopQrstuvWXyz` |
+| `BOT_TOKEN`      | BotFather’dan olingan bot token | `8090909005:AAHIFhLO3jPRLocGDbOVzfGD60kmGQ67p8w` |
 | `ADMIN_IDS`      | Admin Telegram ID’lari (vergul bilan) | `1929508992` |
 
----
-
-## 📦 Talablar (Requirements)
-
-Ushbu botni quyidagi texnologiyalar asosida ishga tushirasiz:
-
-- Python 3.11.9
-- Aiogram 3.x
-- JSON (saqlash uchun)
-
----
-
-## 📁 Loyihaning tuzilmasi
-
-
-
----
-
-## 📜 Litsenziya
-
-Ushbu loyiha ochiq manba sifatida taqdim etilgan. Xohlagan tarzda foydalanishingiz mumkin.
