@@ -12,35 +12,33 @@ router = Router()
 async def exchange(message: Message, bot: Bot, state: FSMContext):
     user_id = str(message.from_user.id)
 
-    # 🧹 Foydalanuvchi yuborgan xabarni o‘chiramiz
+    # 🧹 Foydalanuvchi yuborgan xabarni o‘chirish
     try:
-        await bot.delete_message(message.chat.id, message.message_id)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
     except:
         pass
 
-    # 🧹 Oldingi bot yuborgan xabarni o‘chiramiz
+    # 🧹 Oldingi bot xabarini o‘chirish
     data = await state.get_data()
     msg_id = data.get("last_msg_id")
     if msg_id:
         try:
-            await bot.delete_message(message.chat.id, msg_id)
+            await bot.delete_message(chat_id=message.chat.id, message_id=msg_id)
         except:
             pass
 
-    # 📖 Foydalanuvchi ballini o‘qiymiz
-    from_path = "users.json"
-    user_points = 0  # Default ball
-
-    if os.path.exists(from_path):
+    # 📖 Foydalanuvchi ballini olish
+    user_points = 0
+    if os.path.exists("users.json"):
         try:
-            with open(from_path, "r", encoding="utf-8") as f:
+            with open("users.json", "r", encoding="utf-8") as f:
                 users = json.load(f)
-            user = users.get(user_id, {})
-            user_points = user.get("points", 0)
+                user = users.get(user_id, {})
+                user_points = user.get("points", 0)
         except:
             pass
 
-    # 📋 Almashtirish variantlari matni
+    # 📋 Xabar matni
     text = (
         f"<b>🎁 Ball almashtirish</b>\n\n"
         f"Sizda: <b>{user_points} ball</b> mavjud.\n\n"
@@ -51,6 +49,6 @@ async def exchange(message: Message, bot: Bot, state: FSMContext):
         f"<i>Almashtirish uchun admin bilan bog‘laning yoki avtomatik tizim tez orada qo‘shiladi.</i>"
     )
 
-    # 📩 Xabar yuborish va holatni saqlash
+    # 📩 Javob yuborish
     msg = await message.answer(text, reply_markup=back_menu)
     await state.update_data(last_msg_id=msg.message_id)
