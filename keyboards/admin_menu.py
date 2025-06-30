@@ -1,15 +1,17 @@
-# keyboards/admin_menu.py
+# 📁 keyboards/admin_menu.py
+
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-# 🛠 Admin menyusi tugmalari
+# 🛠 Admin menyusi uchun tugmalar
 admin_main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="📩 Reklama yuborish")],            # 1. Reklama
-        [KeyboardButton(text="📊 Statistika")],                  # 2. Statistika
-        [KeyboardButton(text="➕ Lavozim berish")],              # 3. Lavozim berish
-        [KeyboardButton(text="🔍 ID orqali foydalanuvchini izlash")],  # 4. Foydalanuvchini ID bo‘yicha izlash
-        [KeyboardButton(text="📌 Majburiy obuna sozlamalari")],  # 5. Majburiy reklama (link)
-        [KeyboardButton(text="🚀 Push xabar yuborish")]           # 6. Push xabar
+        [KeyboardButton(text="📩 Reklama yuborish")],
+        [KeyboardButton(text="📊 Statistika")],
+        [KeyboardButton(text="➕ Lavozim berish")],
+        [KeyboardButton(text="🔍 ID orqali foydalanuvchini izlash")],
+        [KeyboardButton(text="📌 Majburiy obuna sozlamalari")],
+        [KeyboardButton(text="🚀 Push xabar yuborish")],
     ],
-    resize_keyboard=True
+    resize_keyboard=True,
+    input_field_placeholder="Admin menyudan birini tanlang..."
 )
